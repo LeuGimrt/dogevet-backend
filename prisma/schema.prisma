@@ -1,0 +1,62 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(uuid())
+  firstname     String         @db.VarChar(100)
+  lastname      String         @db.VarChar(100)
+  email         String         @unique @db.VarChar(100)
+  phone         String         @db.VarChar(9)
+  password      String         @db.VarChar(100)
+  role          Role           @default(USER)
+  registered_at DateTime       @default(now())
+  dogs          Dog[]
+  consults      Consultation[]
+
+  @@map(name: "user")
+}
+
+model Dog {
+  id               String         @id @default(uuid())
+  name             String         @db.VarChar(100)
+  breed            String         @db.VarChar(20)
+  gender           Int
+  b_date           DateTime
+  img              String         @db.VarChar(200)
+  registered_at    DateTime       @default(now())
+  registered_by    User           @relation(fields: [registered_by_id], references: [id], onDelete: Cascade)
+  registered_by_id String
+  consultations    Consultation[]
+
+  @@map(name: "dog")
+}
+
+model Consultation {
+  id               String   @id @default(uuid())
+  symptoms         String   @db.VarChar(100)
+  x_ray_img        String   @db.VarChar(200)
+  registered_at    DateTime @default(now())
+  blood_test       String   @db.VarChar(500)
+  medicine         String   @db.VarChar(100)
+  cost             Decimal
+  registered_by    User     @relation(fields: [registered_by_id], references: [id], onDelete: Cascade)
+  registered_by_id String
+  dog              Dog      @relation(fields: [dog_id], references: [id], onDelete: Cascade)
+  dog_id           String
+
+  @@map(name: "consultation")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
