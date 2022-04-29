@@ -63,8 +63,6 @@ export const getDogs: RequestHandler = async (req, res) => {
 };
 
 export const getAllDogs: RequestHandler = async (req, res) => {
-  const { user } = req.body;
-
   console.log("siono");
 
   try {

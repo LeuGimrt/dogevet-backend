@@ -13,7 +13,7 @@ export const getUser: RequestHandler = async (req, res) => {
       error: { message: "No existe una cuenta" },
     });
 
-  res.json(userFound);
+  return res.json(userFound);
 };
 
 export const updateUser: RequestHandler = async (req, res) => {
@@ -40,7 +40,7 @@ export const updateUser: RequestHandler = async (req, res) => {
         phone,
       },
     });
-    res.json(updatedUser);
+    return res.json(updatedUser);
   } catch (error) {
     console.log(error);
     return res.status(503).json({

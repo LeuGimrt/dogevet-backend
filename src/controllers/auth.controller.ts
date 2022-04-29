@@ -1,10 +1,8 @@
 import { RequestHandler } from "express";
 import jwt from "jsonwebtoken";
 import env from "../config/env";
-import md5 from "md5";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { compare, genSalt, hash } from "bcrypt";
+import prisma from "../config/prisma";
 
 export const register: RequestHandler = async (req, res) => {
   const { firstname, lastname, phone, email, password } = req.body;
@@ -19,15 +17,17 @@ export const register: RequestHandler = async (req, res) => {
     });
 
   // hash password
-  const hashedPassword = md5(password);
+  const saltRounds = await genSalt(10);
+
+  const hashedPassword = await hash(password, saltRounds);
 
   try {
     const user = await prisma.user.create({
       data: { firstname, lastname, phone, email, password: hashedPassword },
     });
-    res.json(user);
+    return res.json(user);
   } catch (error) {
-    res.status(400).json(error);
+    return res.status(400).json(error);
   }
 };
 
@@ -43,11 +43,14 @@ export const login: RequestHandler = async (req, res) => {
     });
 
   // validate password
-  if (md5(password) !== userFound.password) {
+
+  const passwordValid = await compare(password, userFound.password);
+  if (!passwordValid)
     return res.status(400).json({
-      error: { message: "Credenciales incorrectas" },
+      error: {
+        message: "Correo o contraseña no válidas. Verifique la información.",
+      },
     });
-  }
 
   // jsonwebtoken
   const token = jwt.sign(
@@ -58,7 +61,7 @@ export const login: RequestHandler = async (req, res) => {
     env.ACCESS_TOKEN_SECRET
   );
 
-  res.json({
+  return res.json({
     user: userFound,
     token,
   });
