@@ -1,22 +1,29 @@
-import { RequestHandler } from "express";
+import { Sex } from "@prisma/client";
+import { Request, Response } from "express";
 import prisma from "../config/prisma";
+import {
+  DogDetailsRequest,
+  GetDogsRequest,
+  NewDogRequest,
+  SearchDogRequest,
+} from "../interfaces/dog";
 
-export const newDog: RequestHandler = async (req, res) => {
+export const newDog = async (req: NewDogRequest, res: Response) => {
   const {
     name,
     b_date,
-    breed,
-    gender,
+    type,
+    sex,
     img,
     user: { id },
   } = req.body;
 
   try {
-    const newDog = await prisma.dog.create({
+    const newDog = await prisma.pet.create({
       data: {
         b_date: new Date(b_date),
-        breed,
-        gender: parseInt(gender),
+        type,
+        sex: sex === "M" ? Sex.MALE : Sex.FEMALE,
         img,
         name,
         registered_by_id: String(id),
@@ -32,11 +39,11 @@ export const newDog: RequestHandler = async (req, res) => {
   }
 };
 
-export const searchDog: RequestHandler = async (req, res) => {
+export const searchDog = async (req: SearchDogRequest, res: Response) => {
   const { name } = req.params;
 
   try {
-    const dogsFound = await prisma.dog.findMany({
+    const dogsFound = await prisma.pet.findMany({
       where: { name: { contains: name } },
     });
     return res.json(dogsFound);
@@ -47,11 +54,11 @@ export const searchDog: RequestHandler = async (req, res) => {
   }
 };
 
-export const getDogs: RequestHandler = async (req, res) => {
+export const getDogs = async (req: GetDogsRequest, res: Response) => {
   const { user } = req.body;
 
   try {
-    const dogsFound = await prisma.dog.findMany({
+    const dogsFound = await prisma.pet.findMany({
       where: { registered_by_id: user.id },
     });
     return res.json(dogsFound);
@@ -62,11 +69,9 @@ export const getDogs: RequestHandler = async (req, res) => {
   }
 };
 
-export const getAllDogs: RequestHandler = async (req, res) => {
-  console.log("siono");
-
+export const getAllDogs = async (req: Request, res: Response) => {
   try {
-    const dogsFound = await prisma.dog.findMany();
+    const dogsFound = await prisma.pet.findMany();
 
     console.log(dogsFound);
 
@@ -78,11 +83,11 @@ export const getAllDogs: RequestHandler = async (req, res) => {
   }
 };
 
-export const dogDetails: RequestHandler = async (req, res) => {
+export const dogDetails = async (req: DogDetailsRequest, res: Response) => {
   const { dogId } = req.params;
 
   try {
-    const dogDetails = await prisma.dog.findUnique({
+    const dogDetails = await prisma.pet.findUnique({
       where: { id: String(dogId) },
       include: {
         consultations: {

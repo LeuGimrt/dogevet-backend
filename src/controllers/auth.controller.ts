@@ -1,10 +1,11 @@
-import { RequestHandler } from "express";
+import { Response } from "express";
 import jwt from "jsonwebtoken";
 import env from "../config/env";
 import { compare, genSalt, hash } from "bcrypt";
 import prisma from "../config/prisma";
+import { RegisterRequest, LoginRequest } from "../interfaces/auth";
 
-export const register: RequestHandler = async (req, res) => {
+export const register = async (req: RegisterRequest, res: Response) => {
   const { firstname, lastname, phone, email, password } = req.body;
 
   // validate against db
@@ -31,7 +32,7 @@ export const register: RequestHandler = async (req, res) => {
   }
 };
 
-export const login: RequestHandler = async (req, res) => {
+export const login = async (req: LoginRequest, res: Response) => {
   const { email, password } = req.body;
 
   // validate against db

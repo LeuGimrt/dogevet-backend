@@ -19,17 +19,17 @@ model User {
   password      String         @db.VarChar(100)
   role          Role           @default(USER)
   registered_at DateTime       @default(now())
-  dogs          Dog[]
+  pets          Pet[]
   consults      Consultation[]
 
   @@map(name: "user")
 }
 
-model Dog {
+model Pet {
   id               String         @id @default(uuid())
   name             String         @db.VarChar(100)
-  breed            String         @db.VarChar(20)
-  gender           Int
+  type             String         @db.VarChar(40)
+  sex              Sex
   b_date           DateTime
   img              String         @db.VarChar(200)
   registered_at    DateTime       @default(now())
@@ -37,7 +37,7 @@ model Dog {
   registered_by_id String
   consultations    Consultation[]
 
-  @@map(name: "dog")
+  @@map(name: "pet")
 }
 
 model Consultation {
@@ -45,13 +45,12 @@ model Consultation {
   symptoms         String   @db.VarChar(100)
   x_ray_img        String   @db.VarChar(200)
   registered_at    DateTime @default(now())
-  blood_test       String   @db.VarChar(500)
   medicine         String   @db.VarChar(100)
   cost             Decimal
   registered_by    User     @relation(fields: [registered_by_id], references: [id], onDelete: Cascade)
   registered_by_id String
-  dog              Dog      @relation(fields: [dog_id], references: [id], onDelete: Cascade)
-  dog_id           String
+  pet              Pet      @relation(fields: [pet_id], references: [id], onDelete: Cascade)
+  pet_id           String
 
   @@map(name: "consultation")
 }
@@ -59,4 +58,9 @@ model Consultation {
 enum Role {
   USER
   ADMIN
+}
+
+enum Sex {
+  MALE
+  FEMALE
 }

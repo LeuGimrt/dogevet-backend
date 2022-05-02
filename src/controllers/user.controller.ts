@@ -1,7 +1,8 @@
-import { RequestHandler } from "express";
+import { Response } from "express";
 import prisma from "../config/prisma";
+import { GetUserRequest, UpdateUserRequest } from "../interfaces/user";
 
-export const getUser: RequestHandler = async (req, res) => {
+export const getUser = async (req: GetUserRequest, res: Response) => {
   const {
     user: { id },
   } = req.body;
@@ -16,7 +17,7 @@ export const getUser: RequestHandler = async (req, res) => {
   return res.json(userFound);
 };
 
-export const updateUser: RequestHandler = async (req, res) => {
+export const updateUser = async (req: UpdateUserRequest, res: Response) => {
   const {
     firstname,
     lastname,

@@ -1,11 +1,11 @@
-import { RequestHandler } from "express";
+import { Response } from "express";
 import prisma from "../config/prisma";
+import { NewConsultRequest } from "../interfaces/consult";
 
-export const newConsult: RequestHandler = async (req, res) => {
+export const newConsult = async (req: NewConsultRequest, res: Response) => {
   const {
-    dogId,
+    pet_id,
     symptoms,
-    blood_test,
     medicine,
     cost,
     x_ray_img,
@@ -15,12 +15,11 @@ export const newConsult: RequestHandler = async (req, res) => {
   try {
     const newConsult = await prisma.consultation.create({
       data: {
-        blood_test,
-        cost: parseFloat(cost),
+        cost,
         medicine,
         symptoms,
         x_ray_img,
-        dog_id: String(dogId),
+        pet_id,
         registered_by_id: id,
       },
     });
