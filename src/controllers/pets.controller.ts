@@ -2,13 +2,13 @@ import { Sex } from "@prisma/client";
 import { Request, Response } from "express";
 import prisma from "../config/prisma";
 import {
-  DogDetailsRequest,
-  GetDogsRequest,
-  NewDogRequest,
-  SearchDogRequest,
-} from "../interfaces/dog";
+  PetDetailsRequest,
+  GetPetsRequest,
+  NewPetRequest,
+  SearchPetRequest,
+} from "../interfaces/pets";
 
-export const newDog = async (req: NewDogRequest, res: Response) => {
+export const newPet = async (req: NewPetRequest, res: Response) => {
   const {
     name,
     b_date,
@@ -18,18 +18,20 @@ export const newDog = async (req: NewDogRequest, res: Response) => {
     user: { id },
   } = req.body;
 
+  console.log(req.body);
+
   try {
-    const newDog = await prisma.pet.create({
+    const newPet = await prisma.pet.create({
       data: {
         b_date: new Date(b_date),
         type,
         sex: sex === "M" ? Sex.MALE : Sex.FEMALE,
         img,
         name,
-        registered_by_id: String(id),
+        registered_by_id: id,
       },
     });
-    return res.json(newDog);
+    return res.json(newPet);
   } catch (error) {
     console.log(error);
 
@@ -39,14 +41,14 @@ export const newDog = async (req: NewDogRequest, res: Response) => {
   }
 };
 
-export const searchDog = async (req: SearchDogRequest, res: Response) => {
+export const searchPet = async (req: SearchPetRequest, res: Response) => {
   const { name } = req.params;
 
   try {
-    const dogsFound = await prisma.pet.findMany({
+    const petsFound = await prisma.pet.findMany({
       where: { name: { contains: name } },
     });
-    return res.json(dogsFound);
+    return res.json(petsFound);
   } catch (error) {
     return res
       .status(503)
@@ -54,14 +56,14 @@ export const searchDog = async (req: SearchDogRequest, res: Response) => {
   }
 };
 
-export const getDogs = async (req: GetDogsRequest, res: Response) => {
+export const getPets = async (req: GetPetsRequest, res: Response) => {
   const { user } = req.body;
 
   try {
-    const dogsFound = await prisma.pet.findMany({
+    const petsFound = await prisma.pet.findMany({
       where: { registered_by_id: user.id },
     });
-    return res.json(dogsFound);
+    return res.json(petsFound);
   } catch (error) {
     return res
       .status(503)
@@ -69,26 +71,28 @@ export const getDogs = async (req: GetDogsRequest, res: Response) => {
   }
 };
 
-export const getAllDogs = async (req: Request, res: Response) => {
+export const getAllPets = async (req: Request, res: Response) => {
   try {
-    const dogsFound = await prisma.pet.findMany();
+    const petsFound = await prisma.pet.findMany();
 
-    console.log(dogsFound);
+    console.log(petsFound);
 
-    return res.json(dogsFound);
+    return res.json(petsFound);
   } catch (error) {
+    console.log(error);
+
     return res
       .status(503)
       .json({ error: { message: "Ocurrió un error interno" } });
   }
 };
 
-export const dogDetails = async (req: DogDetailsRequest, res: Response) => {
-  const { dogId } = req.params;
+export const petDetails = async (req: PetDetailsRequest, res: Response) => {
+  const { petId } = req.params;
 
   try {
-    const dogDetails = await prisma.pet.findUnique({
-      where: { id: String(dogId) },
+    const petDetails = await prisma.pet.findUnique({
+      where: { id: parseInt(petId) },
       include: {
         consultations: {
           include: {
@@ -97,8 +101,10 @@ export const dogDetails = async (req: DogDetailsRequest, res: Response) => {
         },
       },
     });
-    return res.json(dogDetails);
+    return res.json(petDetails);
   } catch (error) {
+    console.log(error);
+
     return res
       .status(500)
       .json({ error: { message: "Ocurrió un error interno" } });

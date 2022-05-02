@@ -12,6 +12,15 @@ export const newConsult = async (req: NewConsultRequest, res: Response) => {
     user: { id },
   } = req.body;
 
+  const petFound = await prisma.pet.findFirst({
+    where: { id: { equals: pet_id } },
+  });
+
+  if (!petFound)
+    return res.status(404).json({
+      error: { message: "No se encontró la mascota" },
+    });
+
   try {
     const newConsult = await prisma.consultation.create({
       data: {
@@ -26,6 +35,8 @@ export const newConsult = async (req: NewConsultRequest, res: Response) => {
 
     return res.json(newConsult);
   } catch (error) {
+    console.log(error);
+
     return res.status(503).json({
       error: { message: "No se logró guardar la información" },
     });

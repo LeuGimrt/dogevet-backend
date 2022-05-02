@@ -3,7 +3,7 @@ import { TypedRequestBody, Authorized } from "./base";
 // New Consult
 
 interface NewConsultBody extends Authorized {
-  pet_id: string;
+  pet_id: number;
   symptoms: string;
   medicine: string;
   cost: number;

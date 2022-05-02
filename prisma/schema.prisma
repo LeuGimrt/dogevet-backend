@@ -11,7 +11,7 @@ datasource db {
 }
 
 model User {
-  id            String         @id @default(uuid())
+  id            Int            @id @default(autoincrement())
   firstname     String         @db.VarChar(100)
   lastname      String         @db.VarChar(100)
   email         String         @unique @db.VarChar(100)
@@ -26,7 +26,7 @@ model User {
 }
 
 model Pet {
-  id               String         @id @default(uuid())
+  id               Int            @id @default(autoincrement())
   name             String         @db.VarChar(100)
   type             String         @db.VarChar(40)
   sex              Sex
@@ -34,23 +34,23 @@ model Pet {
   img              String         @db.VarChar(200)
   registered_at    DateTime       @default(now())
   registered_by    User           @relation(fields: [registered_by_id], references: [id], onDelete: Cascade)
-  registered_by_id String
+  registered_by_id Int
   consultations    Consultation[]
 
   @@map(name: "pet")
 }
 
 model Consultation {
-  id               String   @id @default(uuid())
+  id               Int      @id @default(autoincrement())
   symptoms         String   @db.VarChar(100)
   x_ray_img        String   @db.VarChar(200)
   registered_at    DateTime @default(now())
   medicine         String   @db.VarChar(100)
   cost             Decimal
   registered_by    User     @relation(fields: [registered_by_id], references: [id], onDelete: Cascade)
-  registered_by_id String
+  registered_by_id Int
   pet              Pet      @relation(fields: [pet_id], references: [id], onDelete: Cascade)
-  pet_id           String
+  pet_id           Int
 
   @@map(name: "consultation")
 }

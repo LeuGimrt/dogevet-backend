@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import env from "./env";
 import authRoutes from "../routes/auth.routes";
-import dogsRoutes from "../routes/dogs.routes";
+import petsRoutes from "../routes/pets.routes";
 import userRoutes from "../routes/user.routes";
 import consultsRoutes from "../routes/consults.routes";
 import validateToken from "../middlewares/validateToken";
@@ -23,7 +23,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/auth", authRoutes);
-app.use("/dogs", validateToken, dogsRoutes);
+app.use("/pets", validateToken, petsRoutes);
 app.use("/user", userRoutes);
 app.use("/consults", validateToken, validateAdminRole, consultsRoutes);
 
